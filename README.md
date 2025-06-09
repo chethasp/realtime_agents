@@ -1,7 +1,7 @@
 
 # **RealtimeAgent over WebSockets**
 
-This project demonstrates how to create a voice assistant using Python, FastAPI, WebSockets, and an AG2 RealtimeAgent. The application streams audio from a browser to a FastAPI server and enables real-time voice communication with the RealtimeAgent.
+This project demonstrates a voice assistant using Python, FastAPI, WebSockets, and an AG2 RealtimeAgent. The application streams audio from a browser to a FastAPI server and enables real-time voice communication with the RealtimeAgent.
 
 ## **Key Features**
 - **WebSocket Audio Streaming**: Direct real-time audio streaming between the browser and server.
@@ -20,7 +20,7 @@ Follow these steps to set up the project locally:
 
 ### **1. Clone the Repository**
 ```bash
-git clone https://github.com/ag2ai/realtime-agent-over-websockets.git
+git clone https://github.com/chethasp/realtime_agents.git
 cd realtime-agent-over-websockets
 ```
 
