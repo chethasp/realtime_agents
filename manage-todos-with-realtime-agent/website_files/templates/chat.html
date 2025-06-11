@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AG2 WebSockets Chat</title>
+    <!-- Add JetBrains Mono font -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 200px;
+            margin: 20px auto;
+        }
+
+        h1 {
+            font-size: 2em;
+            margin-top: 20px;
+        }
+
+        p {
+            line-height: 1.6;
+            margin: 20px 0;
+        }
+
+        .instructions {
+            text-align: left;
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        #todo-table {
+            margin: 20px auto;
+            width: 80%;
+            border-collapse: collapse;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        #todo-table th, #todo-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        #todo-table th {
+            background-color: #f2f2f2;
+            font-weight: 700;
+        }
+        #todo-table td {
+            text-align: left;
+        }
+        .completed-checkbox {
+            pointer-events: none; /* makes the checkbox read-only */
+        }
+    </style>
+    <script>
+        // Dynamically set the WebSocket URLs using the injected port
+        const port = {{ port }};
+        const socketUrl = `ws://localhost:${port}/media-stream`;
+    </script>
+    <script src="/static/main.js?v=20250129.0" type="module" defer></script>
+</head>
+<body>
+    <!-- AG2 Logo -->
+    <img src="/static/ag2.svg" alt="AG2 Logo" class="logo">
+
+    <h1>AG2 WebSockets Chat</h1>
+
+    <div class="instructions">
+        <p>Ensure microphone and speaker access is enabled.</p>
+        <p><strong>We're live!</strong></p>
+        <p>Start plan your day with me!</p>
+    </div>
+
+    <h2>My Todos</h2>
+    <table id="todo-table">
+        <thead>
+            <tr>
+                <th>Task</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be inserted here by JavaScript -->
+        </tbody>
+    </table>
+    <script>
+        async function loadTodos() {
+            try {
+                const response = await fetch('/todos');
+                if (!response.ok) {
+                    throw new Error('Failed to load todos');
+                }
+                const todos = await response.json();
+
+                const tableBody = document.querySelector('#todo-table tbody');
+                tableBody.innerHTML = ''; // Clear existing rows
+
+                todos.forEach(todo => {
+                    const row = document.createElement('tr');
+
+                    // Task name cell
+                    const taskCell = document.createElement('td');
+                    taskCell.textContent = todo.task;
+                    row.appendChild(taskCell);
+
+                    // Status cell (with read-only checkbox)
+                    const statusCell = document.createElement('td');
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.classList.add('completed-checkbox');
+                    checkbox.checked = (todo.status.toLowerCase() === 'done');
+                    checkbox.disabled = true; // ensures user can’t modify it from the UI
+
+                    statusCell.appendChild(checkbox);
+                    row.appendChild(statusCell);
+
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading todos:', error);
+            }
+        }
+
+        // Automatically load todos when the page is ready
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTodos();
+
+            // Also reload every 5 seconds (5000ms)
+            setInterval(loadTodos, 5000);
+        });
+</script>
+</body>
+</html>

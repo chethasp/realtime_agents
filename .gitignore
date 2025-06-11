@@ -174,3 +174,5 @@ OAI_CONFIG_LIST
 
 env/
 .env/
+
+manage-todos-with-realtime-agent/todo.json
