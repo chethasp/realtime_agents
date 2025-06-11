@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AG2 WebSockets Chat</title>
+    <title>Intake Exam Voice Agent</title>
     <!-- Add JetBrains Mono font -->
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -37,25 +37,28 @@
             border-radius: 8px;
             margin-top: 20px;
         }
-        #todo-table {
+
+        #questions-table {
             margin: 20px auto;
             width: 80%;
             border-collapse: collapse;
             font-family: 'JetBrains Mono', monospace;
         }
-        #todo-table th, #todo-table td {
+
+        #questions-table th, #questions-table td {
             border: 1px solid #ddd;
             padding: 8px;
+            text-align: left;
         }
-        #todo-table th {
+
+        #questions-table th {
             background-color: #f2f2f2;
             font-weight: 700;
         }
-        #todo-table td {
-            text-align: left;
-        }
-        .completed-checkbox {
-            pointer-events: none; /* makes the checkbox read-only */
+
+        #current-section {
+            font-size: 1.2em;
+            margin: 20px 0;
         }
     </style>
     <script>
@@ -69,20 +72,20 @@
     <!-- AG2 Logo -->
     <img src="/static/ag2.svg" alt="AG2 Logo" class="logo">
 
-    <h1>AG2 WebSockets Chat</h1>
+    <h1>Intake Exam Voice Agent</h1>
 
     <div class="instructions">
         <p>Ensure microphone and speaker access is enabled.</p>
         <p><strong>We're live!</strong></p>
-        <p>Start plan your day with me!</p>
+        <p>Answer the questions to complete your intake exam!</p>
     </div>
 
-    <h2>My Todos</h2>
-    <table id="todo-table">
+    <h2 id="current-section">Current Section: Loading...</h2>
+    <table id="questions-table">
         <thead>
             <tr>
-                <th>Task</th>
-                <th>Status</th>
+                <th>Question</th>
+                <th>Answer</th>
             </tr>
         </thead>
         <tbody>
@@ -90,51 +93,69 @@
         </tbody>
     </table>
     <script>
-        async function loadTodos() {
+        async function loadProgress() {
             try {
-                const response = await fetch('/todos');
+                const response = await fetch('/progress');
                 if (!response.ok) {
-                    throw new Error('Failed to load todos');
+                    throw new Error('Failed to load progress');
                 }
-                const todos = await response.json();
+                const progress = await response.json();
 
-                const tableBody = document.querySelector('#todo-table tbody');
+                // Update current section
+                const sectionHeader = document.querySelector('#current-section');
+                sectionHeader.textContent = `Current Section: ${progress.current_section || 'Completed'}`;
+
+                // Update questions and answers table
+                const tableBody = document.querySelector('#questions-table tbody');
                 tableBody.innerHTML = ''; // Clear existing rows
 
-                todos.forEach(todo => {
-                    const row = document.createElement('tr');
+                const questions = await fetchQuestions();
+                const section = progress.current_section;
+                const answers = progress.answers[section] || {};
 
-                    // Task name cell
-                    const taskCell = document.createElement('td');
-                    taskCell.textContent = todo.task;
-                    row.appendChild(taskCell);
+                if (section && questions[section]) {
+                    Object.keys(questions[section]).forEach(questionNum => {
+                        const row = document.createElement('tr');
 
-                    // Status cell (with read-only checkbox)
-                    const statusCell = document.createElement('td');
+                        // Question cell
+                        const questionCell = document.createElement('td');
+                        questionCell.textContent = questions[section][questionNum];
+                        row.appendChild(questionCell);
 
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.classList.add('completed-checkbox');
-                    checkbox.checked = (todo.status.toLowerCase() === 'done');
-                    checkbox.disabled = true; // ensures user can’t modify it from the UI
+                        // Answer cell
+                        const answerCell = document.createElement('td');
+                        const answer = answers[questionNum];
+                        answerCell.textContent = answer !== null ? answer : 'Not answered';
+                        row.appendChild(answerCell);
 
-                    statusCell.appendChild(checkbox);
-                    row.appendChild(statusCell);
-
-                    tableBody.appendChild(row);
-                });
+                        tableBody.appendChild(row);
+                    });
+                }
             } catch (error) {
-                console.error('Error loading todos:', error);
+                console.error('Error loading progress:', error);
             }
         }
 
-        // Automatically load todos when the page is ready
-        window.addEventListener('DOMContentLoaded', () => {
-            loadTodos();
+        async function fetchQuestions() {
+            try {
+                const response = await fetch('/questions');
+                if (!response.ok) {
+                    throw new Error('Failed to load questions');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching questions:', error);
+                return {};
+            }
+        }
 
-            // Also reload every 5 seconds (5000ms)
-            setInterval(loadTodos, 5000);
+        // Automatically load progress when the page is ready
+        window.addEventListener('DOMContentLoaded', () => {
+            loadProgress();
+
+            // Reload every 5 seconds to sync with voice answers
+            setInterval(loadProgress, 5000);
         });
-</script>
+    </script>
 </body>
 </html>

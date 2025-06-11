@@ -1,0 +1,20 @@
+{
+  "Basic Details": {
+    "1": "What is the main problem you are here to address today?"
+  },
+  "Opioids - Drugs": {
+    "1": "Have you ever used Heroin or Fentanyl?",
+    "2": "How do you normally take Heroin or Fentanyl?",
+    "3": "Please estimate how much Heroin or Fentanyl you use per session. (in dollars, grams, hits, etc.)"
+  }, 
+    "Substance Use History": {
+    "1": "Around how much have you spend on drugs in the last 30 days?",
+    "2": "Have you ever overdosed? How many times?",
+    "3": "Have you ever felt the withdrawal symptoms of alcohol?"
+  },
+    "Medication History": {
+    "1": "Are you currently taking any prescribed medication ordered by a physician?",
+    "2": "Can you describe the name of the medication, when was it prescribed, and what it's for? ",
+    "3": "How often do you use it? And is it working?"
+  }
+}
