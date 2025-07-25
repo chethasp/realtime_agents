@@ -21,7 +21,7 @@ Follow these steps to set up the project locally:
 ### **1. Clone the Repository**
 ```bash
 git clone https://github.com/chethasp/realtime_agents.git
-cd realtime-agent-over-websockets
+cd datalake-agent
 ```
 
 ### **2. Set Up Environment Variables**
