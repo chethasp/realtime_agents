@@ -55,7 +55,7 @@ pip install -r requirements.txt
 ### **4. Start the Server**
 Run the application with Uvicorn:
 ```bash
-uvicorn realtime_over_websockets.main:app --port 5050
+uvicorn datalake-agent.main:app --port 5050
 ```
 
 ## **Test the App**
